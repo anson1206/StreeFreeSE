@@ -1,6 +1,6 @@
 [theme]
-primaryColor = "#000000"  # Black
-backgroundColor = "#2A3C71"  # Purple
-secondaryBackgroundColor = "#6A0DAD"  # Dark Blue
-textColor = "#FFFFFF"  # White text for readability
+primaryColor = "#1E3A8A"  # Deep Blue (Primary)
+backgroundColor = "#E5E7EB"  # Light Gray (Background)
+secondaryBackgroundColor = "#3B82F6"  # Bright Blue (Secondary)
+textColor = "#1F2937"  # Dark Gray (Text)
 font = "Times New Roman"
