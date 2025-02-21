@@ -10,6 +10,9 @@ class todo:
         self.tasks = []
         if 'kudoPoints' not in st.session_state:
             st.session_state['kudoPoints'] = 0  # Initialize in session state
+        if 'todoList' not in st.session_state:
+            st.session_state['todoList'] = []  # Initialize in session state
+
 
 
     #User adds a task to the list
@@ -22,16 +25,23 @@ class todo:
         else:
             st.error("Please enter a task")
 
-    #Goes through the list of tasks and displays them based on the label
     def display_tasks(self, label):
         if 'todoList' in st.session_state and st.session_state['todoList']:
             for i, task in enumerate(st.session_state['todoList']):
-                if task["label"] == label:
-                    if st.checkbox(task["task"], value=task["done"], key=f"{label}_{i}"):
-                        if not task["done"]:
-                            task["done"] = True
-                            st.session_state['kudoPoints'] += 10  # Update session state
-                            st.balloons()
+                if isinstance(task, dict) and task.get("label") == label:
+                    # Ensure unique key
+                    checked = st.checkbox(task["task"], value=task["done"], key=f"{task['task']}_{label}_{i}")
+
+                    if checked and not task["done"]:
+                        task["done"] = True
+                        st.session_state['kudoPoints'] += 10  # Award Kudo Points
+
+                        # Move task from "In Progress" or "Important" to "Done"
+                        if task["label"] in ["In Progress", "Important"]:
+                            task["label"] = "Done"
+
+                        st.rerun()  # Refresh UI
+                        st.balloons()  # Celebrate with balloons
     @staticmethod
     def get_kudo_points():
         return st.session_state.get('kudoPoints', 0)
