@@ -1,6 +1,6 @@
 [theme]
 primaryColor = "#6A0DAD"  # Purple
-backgroundColor = "#0B1A42"  # Dark Blue
+backgroundColor = "#2A3C71"  # Lighter Dark Blue
 secondaryBackgroundColor = "#FFD700"  # Gold
 textColor = "#FFFFFF"  # White text for readability
-font = "sans serif"
+font = "Times New Roman"
