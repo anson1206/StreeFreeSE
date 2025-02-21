@@ -15,6 +15,9 @@ def showCalendar():
     if "selected_event" not in st.session_state:
         st.session_state["selected_event"] = None
 
+    if "calendar_refresh" not in st.session_state:
+        st.session_state["calendar_refresh"] = 0
+
     # Calendar mode selection
     st.header("Calendar Mode Selection")
     mode = st.selectbox(
@@ -147,7 +150,7 @@ def showCalendar():
         elif mode == "multimonth":
             calendar_options.update({"initialView": "multiMonthYear"})
 
-    # Display calendar with user-inputted & scraped events
+        # Ensure the calendar refreshes properly
     state = calendar(
         events=st.session_state["events"],
         options=calendar_options,
@@ -165,12 +168,8 @@ def showCalendar():
             font-size: 2rem;
         }
         """,
-        key=f"{mode}-{len(st.session_state['events'])}",  # Unique key to force re-render
-        # The `key` parameter in the `calendar` function is used to force Streamlit to re-render the calendar component whenever the key changes.
-        # By setting the key to a unique value that changes when the number of events or the calendar mode changes,
-        # it ensure that the calendar is updated to reflect the latest state.
+        key=f"{mode}-{len(st.session_state['events'])}-{st.session_state.get('calendar_refresh', 0)}",
     )
-
     # Update session state when events are modified in the UI
     if state.get("eventsSet") is not None:
         if isinstance(state["eventsSet"], list):
@@ -209,18 +208,26 @@ def showCalendar():
             delete_submitted = st.form_submit_button("Delete Event")
 
             if update_submitted:
-                st.session_state["selected_event"].update({
-                    "title": title,
-                    "color": color,
-                    "start": f"{start_date}T{start_time}",
-                    "end": f"{end_date}T{end_time}",
-                    "resourceId": resource_id,
-                })
+                # Find the event index in the list
+                for event in st.session_state["events"]:
+                    if event["id"] == st.session_state["selected_event"]["id"]:
+                        event.update({
+                            "title": title,
+                            "color": color,
+                            "start": f"{start_date}T{start_time}",
+                            "end": f"{end_date}T{end_time}",
+                            "resourceId": resource_id,
+                        })
+                        break
+
                 st.success(f"✅ Event '{title}' updated!")
                 st.session_state["selected_event"] = None
+                st.session_state["calendar_refresh"] += 1  # Increment to trigger re-render
+                st.rerun()
 
             if delete_submitted:
                 st.session_state["events"].remove(st.session_state["selected_event"])
                 st.success(f"✅ Event '{title}' deleted!")
                 st.session_state["selected_event"] = None
+                 # Force re-render by changing the session state key
                 st.rerun()
