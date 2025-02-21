@@ -1,0 +1,8 @@
+Index: .gitignore
+===================================================================
+diff --git a/.gitignore b/.gitignore
+deleted file mode 100644
+--- a/.gitignore	(revision 969a566390debddd6674134f1a6efd79a262fb16)
++++ /dev/null	(revision 969a566390debddd6674134f1a6efd79a262fb16)
+@@ -1,1 +0,0 @@
+-__pycache__/
