@@ -5,8 +5,12 @@ import pandas as pd
 from Timer import Timer
 
 class todo:
+    
     def __init__(self):
         self.tasks = []
+        if 'kudoPoints' not in st.session_state:
+            st.session_state['kudoPoints'] = 0  # Initialize in session state
+
 
     #User adds a task to the list
     def add_task(self, task, label):
@@ -26,6 +30,9 @@ class todo:
                     if st.checkbox(task["task"], value=task["done"], key=f"{label}_{i}"):
                         if not task["done"]:
                             task["done"] = True
+                            st.session_state['kudoPoints'] += 10  # Update session state
                             st.balloons()
-
+    @staticmethod
+    def get_kudo_points():
+        return st.session_state.get('kudoPoints', 0)
 

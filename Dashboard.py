@@ -1,5 +1,6 @@
 import streamlit as st
 import ToDoList
+from ToDoList import todo 
 from Timer import Timer
 from NCFCalendarScraper import scraper_page  # Import scraper page
 import Calendar
@@ -176,6 +177,9 @@ def main():
         with col4:
             st.header("Done")
             todo.display_tasks("Done")
+            
+        st.subheader(f"Kudo Points: {todo.get_kudo_points()}")  # Display the points
+
 
     elif page == "NCF Website Scraper":
         scraper_page()  # Load the scraper page
