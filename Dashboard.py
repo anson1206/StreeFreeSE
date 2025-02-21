@@ -6,11 +6,11 @@ import Calendar
 from datetime import datetime, timedelta
 from MagicWand import magic_wand
 from Scheduler import popup
-
+from TaskTimer import TaskTime
 
 def main():
     st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to", ["Dashboard", "Scheduler", "To-Do List", "NCF Website Scraper", "Magic Wand"])
+    page = st.sidebar.radio("Go to", ["Dashboard", "Scheduler", "To-Do List","Task Timer", "NCF Website Scraper", "Magic Wand"])
 
     if page == "Dashboard":
         st.title("📌 Student Dashboard")
@@ -107,6 +107,35 @@ def main():
     elif page == "Scheduler":
         st.title("📅 Scheduler")
         st.write("Here you can manage your class schedule and deadlines.")
+
+    elif page == "Task Timer":
+        st.title("⏱️ Task Timer")
+        st.write("Track how long you spend on each task.")
+
+        taskTime = TaskTime()
+        task_name = st.text_input("Enter the task name")
+
+        if st.button("Start Timer"):
+            if task_name.strip():
+                taskTime.start_timer(task_name)
+            else:
+                st.error("Please enter a task name before starting the timer.")
+
+        if st.button("Stop Timer"):
+            taskTime.stop_timer()
+        st.title("⏱️ Task Timer")
+        st.write("Track how long you spend on each task.")
+
+
+
+        taskTime.display_timer()
+        taskTime.show_task_times()
+        task_delete = st.number_input("Enter the task number you want to delete", min_value=1, step=1)
+        if st.button("Delete Task"):
+            taskTime.delete_task(task_delete - 1)
+            st.success(f"Task #{task_delete} deleted.")
+            st.rerun()
+
 
     elif page == "To-Do List":
         st.title("✅ To-Do List")
