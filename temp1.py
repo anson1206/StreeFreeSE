@@ -10,6 +10,7 @@ import uuid
 
 
 def showCalendar():
+    """
     st.markdown("## Interactive Calendar with Event Input 📆")
 
     # Ensure session state contains an event list
@@ -28,7 +29,7 @@ def showCalendar():
         events_from_db = DB.load_events(st.session_state["user_id"])
         st.session_state["events"] = events_from_db
 
-
+"""
     # Calendar mode selection
     st.header("Calendar Mode Selection")
     mode = st.selectbox(
