@@ -5,6 +5,7 @@ import uuid
 import Database as DB
 
 def showCalendar():
+    """
     st.markdown("## Interactive Calendar with Event Input 📆")
 
     # Ensure session state contains an event list
@@ -21,6 +22,8 @@ def showCalendar():
     # Load events from the database if not already loaded
     if len(st.session_state["events"]) == 0 and st.session_state["user_id"]:
         DB.load_events(st.session_state["user_id"])
+
+    """
 
     # Calendar mode selection
     st.header("Calendar Mode Selection")
