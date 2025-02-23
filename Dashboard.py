@@ -10,6 +10,7 @@ from Scheduler import popup
 from TaskTimer import TaskTime
 
 def main():
+    user_id = st.session_state.get("user_id") 
     st.sidebar.title("Navigation")
     page = st.sidebar.radio("Go to", ["Dashboard", "Scheduler", "To-Do List","Task Timer", "NCF Website Scraper", "Magic Wand"])
 
@@ -43,7 +44,10 @@ def main():
 
         # Display To-Do List
         st.subheader("✅ To-Do List")
-        todo = ToDoList.todo()
+        if user_id:
+            todo = ToDoList.todo(user_id)  # Pass user_id when creating an instance
+        else:
+            st.error("User not logged in!")  # Display error if user_id is not available
         todo.display_tasks("Important")
 
         # Sticky Notes Section
@@ -142,7 +146,7 @@ def main():
         st.title("✅ To-Do List")
         st.write("Manage your tasks and keep track of what needs to be done.")
 
-        todo = ToDoList.todo()
+        todo = ToDoList.todo(user_id)
         col1, col2, col3, col4 = st.columns(4)
 
         # Timer integration
@@ -178,7 +182,12 @@ def main():
             st.header("Done")
             todo.display_tasks("Done")
             
-        st.subheader(f"Kudo Points: {todo.get_kudo_points()}")  # Display the points
+        if user_id:
+            todo_instance = ToDoList.todo(user_id)  # Create an instance of todo
+            st.subheader(f"Kudo Points: {todo_instance.get_kudo_points_from_db()}")  # Call the method properly
+        else:
+            st.error("User not logged in!")  # Display error if user_id is not available
+
 
 
     elif page == "NCF Website Scraper":
@@ -191,5 +200,3 @@ def main():
         popup()
 
 
-if __name__ == "__main__":
-    main()
