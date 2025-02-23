@@ -29,33 +29,17 @@ def sign_up(email, password):
         print("Response from Supabase:", response)
 
         # Check if 'user' exists in response
-        if response.user:  # Access the user attribute directly
-            # Extract user details
-            user = response.user
-            print(f"User created: {user}")  # Log the user data
+        if response and "error" not in response:
+            # Show a warning message instructing the user to verify their email
+            st.warning("Account created! Please verify your email before signing in.")
 
-            # Insert profile data into a "profiles" table if required
-            profile_data = {
-                "user_id": user.id,
-                "email": user.email
-            }
-            # Assuming 'profiles' is a table in your Supabase database
-            profile_response = supabase.table("profiles").insert(profile_data).execute()
-            
-            # Check for success on inserting profile data
-            if profile_response.status_code == 201:
-                st.success("Account created successfully! Please sign in.")
-                return user
-            else:
-                st.error(f"Error inserting profile: {profile_response.error_message}")
-                return None
-        
+            # Force the user to log in manually after verification
+            return None  # Do not log the user in automatically
         else:
-            # Handle the case where no 'user' is returned in the response
-            st.error("Error creating account: No user returned.")
-            st.write(response)  # This will print the full response to help debug
+            st.error("Error creating account. Please try again.")
+            st.write(response)  # Debugging info
             return None
-    
+
     except Exception as e:
         st.error(f"Error creating account: {str(e)}")
         return None
