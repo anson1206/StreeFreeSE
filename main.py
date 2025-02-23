@@ -4,15 +4,13 @@ from streamlit_calendar import calendar
 import Dashboard as DB
 import ToDoList as TDL
 import Calendar
+import Database as Data
 
-DB.main()
-TDL.todo()
-def example():
-    rain(
-        emoji="🎈",
-        font_size=54,
-        falling_speed=5,
-        animation_length="5",
-    )
-#example()
-#Calendar.showCalendar()
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False  # Initially not logged in
+
+if not st.session_state.logged_in:
+    Data.login_page()  # Show login page
+else:
+    DB.main()  # Show dashboard after login
+    TDL.todo()  # Show ToDo List

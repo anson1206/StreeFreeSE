@@ -2,16 +2,19 @@ import streamlit as st
 import datetime
 import uuid
 import Database as DB
+
+import streamlit as st
 from streamlit_calendar import calendar
+import datetime
+import uuid
+
 
 def showCalendar():
     st.markdown("## Interactive Calendar with Event Input 📆")
-    # Debugging prints
-    st.write("Current session state:", st.session_state)
 
-    if 'events' not in st.session_state or st.session_state['events'] is None:
-        st.session_state['events'] = []  # Initialize it as an empty list
-        st.write("Initialized events:", st.session_state["events"])
+    # Ensure session state contains an event list
+    if "events" not in st.session_state:
+        st.session_state["events"] = []
 
     # Ensure session state contains a selected event
     if "selected_event" not in st.session_state:
@@ -19,23 +22,27 @@ def showCalendar():
 
     if "calendar_refresh" not in st.session_state:
         st.session_state["calendar_refresh"] = 0
-
-    # Proceed to load events from the database if not already loaded
-    if len(st.session_state["events"]) == 0 and st.session_state.get("user_id"):
+    
+        # Load events from the database if not already loaded
+    if len(st.session_state["events"]) == 0 and st.session_state["user_id"]:
         events_from_db = DB.load_events(st.session_state["user_id"])
-        st.write("Loaded events:", events_from_db)
-        
-        # Ensure the loaded events are a list
-        if events_from_db is None:
-            events_from_db = []  # Convert None to an empty list if needed
-
         st.session_state["events"] = events_from_db
+
 
     # Calendar mode selection
     st.header("Calendar Mode Selection")
     mode = st.selectbox(
         "Calendar Mode:",
-        ("daygrid", "timegrid", "timeline", "resource-daygrid", "resource-timegrid", "resource-timeline", "list", "multimonth")
+        (
+            "daygrid",
+            "timegrid",
+            "timeline",
+            "resource-daygrid",
+            "resource-timegrid",
+            "resource-timeline",
+            "list",
+            "multimonth",
+        ),
     )
 
     # Event input form inside an expander
@@ -51,7 +58,9 @@ def showCalendar():
             end_date = st.date_input("End Date", datetime.date.today())
             start_time = st.time_input("Start Time", datetime.time(9, 0))
             end_time = st.time_input("End Time", datetime.time(10, 0))
-            resource_id = st.selectbox("Resource ID", ["a", "b", "c", "d", "e", "f"], index=0)
+            resource_id = st.selectbox(
+                "Resource ID", ["a", "b", "c", "d", "e", "f"], index=0
+            )
 
             # Submit button for the form
             submitted = st.form_submit_button("Add Event")
@@ -98,7 +107,6 @@ def showCalendar():
         "selectable": "true",
     }
 
-    # Set specific calendar options based on selected mode
     if "resource" in mode:
         if mode == "resource-daygrid":
             calendar_options.update({
@@ -154,47 +162,38 @@ def showCalendar():
         elif mode == "multimonth":
             calendar_options.update({"initialView": "multiMonthYear"})
 
-    # Render the calendar
+        # Ensure the calendar refreshes properly
     state = calendar(
         events=st.session_state["events"],
         options=calendar_options,
-        custom_css=""" 
-        .fc-event-past { opacity: 0.8; } 
-        .fc-event-time { font-style: italic; } 
-        .fc-event-title { font-weight: 700; } 
-        .fc-toolbar-title { font-size: 2rem; }
+        custom_css="""
+        .fc-event-past {
+            opacity: 0.8;
+        }
+        .fc-event-time {
+            font-style: italic;
+        } 
+        .fc-event-title {
+            font-weight: 700;
+        }
+        .fc-toolbar-title {
+            font-size: 2rem;
+        }
         """,
         key=f"{mode}-{len(st.session_state['events'])}-{st.session_state.get('calendar_refresh', 0)}",
     )
-
     # Update session state when events are modified in the UI
     if state.get("eventsSet") is not None:
         if isinstance(state["eventsSet"], list):
             st.session_state["events"] = state["eventsSet"]
 
-    # Assuming you're storing events in session_state["events"]
+    # Handle event click
     if state.get("eventClick") is not None:
-        # Print all events in session state for debugging
-        st.write("All events in session state:", st.session_state.get("events", []))
-        
-        # Print clicked event details for debugging
-        clicked_event_id = state["eventClick"]["event"]["id"]
-        st.write("Clicked event ID:", clicked_event_id)
+        event_id = state["eventClick"]["event"]["id"]
+        st.session_state["selected_event"] = next(
+            (event for event in st.session_state["events"] if event["id"] == event_id), None
+        )
 
-        try:
-            # Attempt to find the event based on id
-            st.session_state["selected_event"] = next(
-                (event for event in st.session_state.get("events", []) if str(event.get("id")) == str(clicked_event_id)), None
-            )
-            
-            if st.session_state["selected_event"]:
-                st.write(f"Event '{st.session_state['selected_event']['title']}' selected!")
-            else:
-                st.error(f"No event found with id {clicked_event_id}")
-        except KeyError as e:
-            st.error(f"Error processing event click: {e}")
-
-            
     # Edit or delete selected event
     if st.session_state["selected_event"]:
         with st.form("edit_event_form"):
@@ -203,10 +202,14 @@ def showCalendar():
             # Input fields for editing event details
             title = st.text_input("Event Title", st.session_state["selected_event"]["title"])
             color = st.color_picker("Pick a Color", st.session_state["selected_event"]["color"])
-            start_date = st.date_input("Start Date", datetime.date.fromisoformat(st.session_state["selected_event"]["start"].split("T")[0]))
-            end_date = st.date_input("End Date", datetime.date.fromisoformat(st.session_state["selected_event"]["end"].split("T")[0]))
-            start_time = st.time_input("Start Time", datetime.time.fromisoformat(st.session_state["selected_event"]["start"].split("T")[1]))
-            end_time = st.time_input("End Time", datetime.time.fromisoformat(st.session_state["selected_event"]["end"].split("T")[1]))
+            start_date = st.date_input("Start Date", datetime.date.fromisoformat(
+                st.session_state["selected_event"]["start"].split("T")[0]))
+            end_date = st.date_input("End Date", datetime.date.fromisoformat(
+                st.session_state["selected_event"]["end"].split("T")[0]))
+            start_time = st.time_input("Start Time", datetime.time.fromisoformat(
+                st.session_state["selected_event"]["start"].split("T")[1]))
+            end_time = st.time_input("End Time", datetime.time.fromisoformat(
+                st.session_state["selected_event"]["end"].split("T")[1]))
             resource_id = st.selectbox(
                 "Resource ID", ["a", "b", "c", "d", "e", "f"],
                 index=["a", "b", "c", "d", "e", "f"].index(st.session_state["selected_event"]["resource_id"])
@@ -244,7 +247,11 @@ def showCalendar():
             if delete_submitted:
                 st.session_state["events"].remove(st.session_state["selected_event"])
                 st.success(f"✅ Event '{title}' deleted!")
+                # Delete event from the database
                 DB.delete_event(st.session_state["selected_event"]["id"])
                 st.session_state["selected_event"] = None
-                st.session_state["calendar_refresh"] += 1  # Increment to trigger re-render
+                 # Force re-render by changing the session state key
                 st.rerun()
+
+
+    

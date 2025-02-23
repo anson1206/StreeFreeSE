@@ -4,3 +4,4 @@ streamlit_calendar
 datetime
 timedelta
 uuid
+supabase
