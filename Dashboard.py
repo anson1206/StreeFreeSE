@@ -16,7 +16,7 @@ url = "https://rpygalqqsnuajcsdbkut.supabase.co"
 key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJweWdhbHFxc251YWpjc2Ria3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxNjg3MDYsImV4cCI6MjA1NTc0NDcwNn0.ZFgjCTQAiHCuwubyfP1tdTajHRG96XsZWoPIRZYT60o"  # Replace with your Supabase API key
 supabase: Client = create_client(url, key)
 
-def fetch_sticky_notes(user_id):
+def fetch_sticky_notes(user_id):  
     """Retrieve sticky notes from Supabase for the given user_id."""
     response = supabase.table("events").select("sticky_notes").eq("user_id", user_id).execute()
 
