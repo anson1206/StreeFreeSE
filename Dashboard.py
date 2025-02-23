@@ -8,6 +8,42 @@ from datetime import datetime, timedelta
 from MagicWand import magic_wand
 from Scheduler import popup
 from TaskTimer import TaskTime
+from supabase import create_client, Client
+import json
+
+# Initialize Supabase
+url = "https://rpygalqqsnuajcsdbkut.supabase.co"  
+key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJweWdhbHFxc251YWpjc2Ria3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxNjg3MDYsImV4cCI6MjA1NTc0NDcwNn0.ZFgjCTQAiHCuwubyfP1tdTajHRG96XsZWoPIRZYT60o"  # Replace with your Supabase API key
+supabase: Client = create_client(url, key)
+
+def fetch_sticky_notes(user_id):
+    """Retrieve sticky notes from Supabase for the given user_id."""
+    response = supabase.table("events").select("sticky_notes").eq("user_id", user_id).execute()
+
+    if response.data:
+        # Convert the JSON string back to a list
+        return json.loads(response.data[0]["sticky_notes"])
+    return []  # Return an empty list if no data exists
+
+def update_sticky_notes(user_id, sticky_notes):
+    """Update sticky notes in Supabase for the given user_id."""
+
+    # Ensure sticky_notes is a JSON array
+    sticky_notes_json = json.dumps(sticky_notes)
+
+    # Try updating existing sticky notes
+    response = supabase.table("events").update({
+        "sticky_notes": sticky_notes_json
+    }).eq("user_id", user_id).execute()
+
+    # If no record exists, insert a new one
+    if response.data == []:
+        response = supabase.table("events").insert({
+            "user_id": user_id,
+            "sticky_notes": sticky_notes_json
+        }).execute()
+
+    return response
 
 def main():
     user_id = st.session_state.get("user_id") 
@@ -53,60 +89,55 @@ def main():
         # Sticky Notes Section
         st.subheader("📝 Sticky Notes")
 
-        if "sticky_notes" not in st.session_state:
-            st.session_state.sticky_notes = []  # List to store multiple sticky notes
+    if "sticky_notes" not in st.session_state or st.session_state.sticky_notes is None:
+        st.session_state.sticky_notes = fetch_sticky_notes(user_id) or []
 
-        note_input = st.text_area("Write your note:", height=100)
+    # Input for adding a sticky note
+    note_input = st.text_area("Write your note:", height=100)
+    
+    if st.button("Submit"):
+        if note_input.strip():
+            cleaned_note = note_input.strip()
+            st.session_state.sticky_notes.append(cleaned_note)  # Add note to local session state
+            update_sticky_notes(user_id, st.session_state.sticky_notes)  # Update Supabase
 
-        if st.button("Submit"):
-            if note_input.strip():  # Prevent empty notes
-                cleaned_note = note_input.strip()  # Remove leading/trailing newlines
-                st.session_state.sticky_notes.append(cleaned_note)
+        # Display Sticky Notes
+    if st.session_state.sticky_notes:
+        st.write("### 🗒️ Your Sticky Notes:")
+        
+        # Pair notes with their index for correct deletion mapping
+        notes_with_indices = list(enumerate(st.session_state.sticky_notes, start=1))
 
-        # Display Submitted Sticky Notes
-        if st.session_state.sticky_notes:
-            st.write("### 🗒️ Your Sticky Notes:")
-            # Display sticky notes with corresponding number
-            for idx, note in enumerate(st.session_state.sticky_notes[::-1]):  # Display most recent first
-                note_number = len(st.session_state.sticky_notes) - idx  # Number corresponding to the note
-                st.markdown(
-                    f"""
-                    <div style="
-                        background-color: #FFEB3B;
-                        padding: 10px;
-                        margin: 5px 0;
-                        margin-top: 0;
-                        padding-top: 0;
-                        border-radius: 5px;
-                        box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-                        font-size: 16px;
-                        font-weight: bold;
-                        color: black;
-                        max-width: 400px;
-                        word-wrap: break-word;
-                        white-space: pre-wrap;
-                        overflow-wrap: break-word;">
-                        <strong>{note_number}:</strong> {note}
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+        for note_number, note in notes_with_indices:
+            st.markdown(
+                f"""
+                <div style="background-color: #FFEB3B; padding: 10px; margin: 5px 0; border-radius: 5px;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.2); font-size: 16px; font-weight: bold; color: black;
+                max-width: 400px; word-wrap: break-word; white-space: pre-wrap; overflow-wrap: break-word;">
+                <strong>{note_number}:</strong> {note}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
-        # Input to delete a sticky note by its number
-        note_to_delete = st.text_input("Enter the number of the sticky note you want to delete:")
+    # Input to delete a sticky note by number
+    note_to_delete = st.text_input("Enter the number of the sticky note you want to delete:")
 
-        if st.button("Delete"):
-            if note_to_delete.isdigit():
-                note_to_delete = int(note_to_delete)
-                if 1 <= note_to_delete <= len(st.session_state.sticky_notes):
-                    # Remove the sticky note with the corresponding number
-                    st.session_state.sticky_notes.pop(len(st.session_state.sticky_notes) - note_to_delete)
-                    st.success(f"Sticky Note #{note_to_delete} deleted.")
-                    st.rerun()  # Rerun to refresh the page and remove the deleted sticky note
-                else:
-                    st.error("Invalid note number. Please enter a valid number.")
+    if st.button("Delete"):
+        if note_to_delete.isdigit():
+            note_to_delete = int(note_to_delete)
+            
+            # Ensure the number is valid
+            if 1 <= note_to_delete <= len(st.session_state.sticky_notes):
+                # Adjust index for correct deletion
+                del st.session_state.sticky_notes[note_to_delete - 1]
+                update_sticky_notes(user_id, st.session_state.sticky_notes)  # Update Supabase
+                st.success(f"Sticky Note #{note_to_delete} deleted.")
+                st.rerun()  # Refresh the page
             else:
-                st.error("Please enter a valid number.")
+                st.error("Invalid note number. Please enter a valid number.")
+        else:
+            st.error("Please enter a valid number.")
 
 
     elif page == "Scheduler":
