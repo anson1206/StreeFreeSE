@@ -8,6 +8,7 @@ url = "https://rpygalqqsnuajcsdbkut.supabase.co"
 key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJweWdhbHFxc251YWpjc2Ria3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxNjg3MDYsImV4cCI6MjA1NTc0NDcwNn0.ZFgjCTQAiHCuwubyfP1tdTajHRG96XsZWoPIRZYT60o"
 supabase: Client = create_client(url, key)
 
+
 def sign_in(email, password):
     """Sign in the user with email and password."""
     try:
@@ -16,6 +17,7 @@ def sign_in(email, password):
     except Exception as e:
         st.error(f"Error signing in: {str(e)}")
         return None
+
 
 def sign_up(email, password):
     try:
@@ -50,6 +52,7 @@ def load_events(user_id):
     response = supabase.table("events").select("*").eq("user_id", user_id).execute()
     st.session_state["events"] = response.data
 
+
 def save_event(event, user_id):
     """Save a new event to Supabase."""
     try:
@@ -57,12 +60,12 @@ def save_event(event, user_id):
             user_id = uuid.UUID(user_id)
         elif not isinstance(user_id, uuid.UUID):
             raise ValueError("user_id must be a valid UUID string or UUID object")
-        
+
         if "id" in event:
             del event["id"]  # Ensure 'id' field is not included in the event data
-        
+
         event["user_id"] = str(user_id)  # Add user_id as a string
-        
+
         response = supabase.table("events").insert(event).execute()
         return response
     except ValueError as e:
@@ -70,15 +73,18 @@ def save_event(event, user_id):
     except Exception as e:
         st.error(f"Unexpected error: {str(e)}")
 
+
 def update_event(event_id, updated_event):
     """Update an event in Supabase."""
     response = supabase.table("events").update(updated_event).eq("id", event_id).execute()
     return response
 
+
 def delete_event(event_id):
     """Delete an event from Supabase."""
     response = supabase.table("events").delete().eq("id", event_id).execute()
     return response
+
 
 def login_page():
     """Display login page."""
@@ -89,7 +95,7 @@ def login_page():
         email = st.text_input("Email")
         password = st.text_input("Password", type="password")
         login_button = st.button("Login")
-        
+
         if login_button:
             user = sign_in(email, password)
             if user:

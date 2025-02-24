@@ -1,6 +1,6 @@
 import streamlit as st
 import ToDoList
-from ToDoList import todo 
+from ToDoList import todo
 from Timer import Timer
 from NCFCalendarScraper import scraper_page  # Import scraper page
 import Calendar
@@ -12,18 +12,20 @@ from supabase import create_client, Client
 import json
 
 # Initialize Supabase
-url = "https://rpygalqqsnuajcsdbkut.supabase.co"  
+url = "https://rpygalqqsnuajcsdbkut.supabase.co"
 key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJweWdhbHFxc251YWpjc2Ria3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxNjg3MDYsImV4cCI6MjA1NTc0NDcwNn0.ZFgjCTQAiHCuwubyfP1tdTajHRG96XsZWoPIRZYT60o"  # Replace with your Supabase API key
 supabase: Client = create_client(url, key)
+
 
 def fetch_sticky_notes(user_id):
     """Retrieve sticky notes from Supabase for the given user_id."""
     response = supabase.table("events").select("sticky_notes").eq("user_id", user_id).execute()
 
     if response.data and response.data[0]["sticky_notes"]:  # Ensure sticky_notes is not None
-        return json.loads(response.data[0]["sticky_notes"])  
-    
+        return json.loads(response.data[0]["sticky_notes"])
+
     return []  # Return an empty list if no data exists
+
 
 def update_sticky_notes(user_id, sticky_notes):
     """Update sticky notes in Supabase for the given user_id."""
@@ -44,6 +46,7 @@ def update_sticky_notes(user_id, sticky_notes):
         }).execute()
 
     return response
+
 
 def calculate_weekly_event_hours():
     """Calculate the total hours spent on each event type per week."""
@@ -83,11 +86,11 @@ def calculate_weekly_event_hours():
         st.write("No tracked events for this week.")
 
 
-
 def main():
-    user_id = st.session_state.get("user_id") 
+    user_id = st.session_state.get("user_id")
     st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to", ["Dashboard", "Scheduler", "To-Do List","Task Timer", "NCF Website Scraper", "Magic Wand"])
+    page = st.sidebar.radio("Go to",
+                            ["Dashboard", "Scheduler", "To-Do List", "Task Timer", "NCF Website Scraper", "Magic Wand"])
 
     if page == "Dashboard":
         st.title("📌 Student Dashboard")
@@ -116,7 +119,7 @@ def main():
                     st.write("No upcoming events in the next 7 days.")
 
         Calendar.showCalendar()
-         # Display weekly event hours tracking
+        # Display weekly event hours tracking
         calculate_weekly_event_hours()
 
         # Display To-Do List
@@ -135,7 +138,7 @@ def main():
 
     # Input for adding a sticky note
     note_input = st.text_area("Write your note:", height=100)
-    
+
     if st.button("Submit"):
         if note_input.strip():
             cleaned_note = note_input.strip()
@@ -145,7 +148,7 @@ def main():
         # Display Sticky Notes
     if st.session_state.sticky_notes:
         st.write("### 🗒️ Your Sticky Notes:")
-        
+
         # Pair notes with their index for correct deletion mapping
         notes_with_indices = list(enumerate(st.session_state.sticky_notes, start=1))
 
@@ -167,7 +170,7 @@ def main():
     if st.button("Delete"):
         if note_to_delete.isdigit():
             note_to_delete = int(note_to_delete)
-            
+
             # Ensure the number is valid
             if 1 <= note_to_delete <= len(st.session_state.sticky_notes):
                 # Adjust index for correct deletion
@@ -202,8 +205,6 @@ def main():
             taskTime.stop_timer()
         st.title("⏱️ Task Timer")
         st.write("Track how long you spend on each task.")
-
-
 
         taskTime.display_timer()
         taskTime.show_task_times()
@@ -253,7 +254,7 @@ def main():
         with col4:
             st.header("Done")
             todo.display_tasks("Done")
-            
+
         if user_id:
             todo_instance = ToDoList.todo(user_id)  # Create an instance of todo
             st.subheader(f"Kudo Points: {todo_instance.get_kudo_points_from_db()}")  # Call the method properly
@@ -270,5 +271,4 @@ def main():
 
     elif page == "Scheduler":
         popup()
-
 

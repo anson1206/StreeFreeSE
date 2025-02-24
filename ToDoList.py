@@ -1,4 +1,4 @@
-#This class handles the to do list functionality
+# This class handles the to do list functionality
 
 import streamlit as st
 import pandas as pd
@@ -10,13 +10,14 @@ supabase_url = "https://rpygalqqsnuajcsdbkut.supabase.co"
 supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJweWdhbHFxc251YWpjc2Ria3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxNjg3MDYsImV4cCI6MjA1NTc0NDcwNn0.ZFgjCTQAiHCuwubyfP1tdTajHRG96XsZWoPIRZYT60o"
 supabase = create_client(supabase_url, supabase_key)
 
+
 class todo:
     def __init__(self, user_id):
         self.user_id = user_id  # Store user_id
         if 'kudoPoints' not in st.session_state:
             # Fetch from DB and ensure it doesn't return None
             st.session_state['kudoPoints'] = self.get_kudo_points_from_db() or 0  # Fallback to 0 if None
-    
+
     def add_task(self, task, label):
         if 'todoList' not in st.session_state:
             st.session_state['todoList'] = []
@@ -59,4 +60,3 @@ class todo:
             current_points = 0
         new_points = current_points + points  # Add new points
         supabase.table("events").update({"kudo_points": new_points}).eq("user_id", self.user_id).execute()
-

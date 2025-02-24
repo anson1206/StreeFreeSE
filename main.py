@@ -14,4 +14,4 @@ if not st.session_state.logged_in:
     Data.login_page()  # Show login page
 else:
     DB.main()  # Show dashboard after login
-    TDL.todo(user_id)  # Show ToDo List
+    TDL.todo(user_id)  # Show To Do List
