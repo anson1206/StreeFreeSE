@@ -5,10 +5,9 @@ import Database as DB
 from streamlit_calendar import calendar
 
 def showCalendar():
-    """
     st.markdown("## Interactive Calendar with Event Input 📆")
     # Debugging prints
-    st.write("Current session state:", st.session_state)
+    #st.write("Current session state:", st.session_state)
 
     if 'events' not in st.session_state or st.session_state['events'] is None:
         st.session_state['events'] = []  # Initialize it as an empty list
@@ -31,7 +30,7 @@ def showCalendar():
             events_from_db = []  # Convert None to an empty list if needed
 
         st.session_state["events"] = events_from_db
-"""
+
     # Calendar mode selection
     st.header("Calendar Mode Selection")
     mode = st.selectbox(
