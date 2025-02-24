@@ -96,8 +96,7 @@ def calculate_weekly_event_hours():
 def main():
     user_id = st.session_state.get("user_id")
     st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to",
-                            ["Dashboard", "Scheduler", "To-Do List", "Task Timer", "Website Scraper", "Magic Wand"])
+    page = st.sidebar.radio("Go to", ["Dashboard", "Scheduler", "To-Do List", "Task Timer", "Website Scraper", "Magic Wand"])
 
     if page == "Dashboard":
         st.title("📌 Student Dashboard")
@@ -139,58 +138,56 @@ def main():
 
         # Sticky Notes Section
         st.subheader("📝 Sticky Notes")
+        if "sticky_notes" not in st.session_state or st.session_state.sticky_notes is None:
+            st.session_state.sticky_notes = fetch_sticky_notes(user_id) or []
 
-    if "sticky_notes" not in st.session_state or st.session_state.sticky_notes is None:
-        st.session_state.sticky_notes = fetch_sticky_notes(user_id) or []
+        # Input for adding a sticky note
+        note_input = st.text_area("Write your note:", height=100)
 
-    # Input for adding a sticky note
-    note_input = st.text_area("Write your note:", height=100)
-
-    if st.button("Submit"):
-        if note_input.strip():
-            cleaned_note = note_input.strip()
-            st.session_state.sticky_notes.append(cleaned_note)  # Add note to local session state
-            update_sticky_notes(user_id, st.session_state.sticky_notes)  # Update Supabase
+        if st.button("Submit"):
+            if note_input.strip():
+                cleaned_note = note_input.strip()
+                st.session_state.sticky_notes.append(cleaned_note)  # Add note to local session state
+                update_sticky_notes(user_id, st.session_state.sticky_notes)  # Update Supabase
 
         # Display Sticky Notes
-    if st.session_state.sticky_notes:
-        st.write("### 🗒️ Your Sticky Notes:")
+        if st.session_state.sticky_notes:
+            st.write("### 🗒️ Your Sticky Notes:")
 
-        # Pair notes with their index for correct deletion mapping
-        notes_with_indices = list(enumerate(st.session_state.sticky_notes, start=1))
+            # Pair notes with their index for correct deletion mapping
+            notes_with_indices = list(enumerate(st.session_state.sticky_notes, start=1))
 
-        for note_number, note in notes_with_indices:
-            st.markdown(
-                f"""
-                <div style="background-color: #FFEB3B; padding: 10px; margin: 5px 0; border-radius: 5px;
-                box-shadow: 2px 2px 5px rgba(0,0,0,0.2); font-size: 16px; font-weight: bold; color: black;
-                max-width: 400px; word-wrap: break-word; white-space: pre-wrap; overflow-wrap: break-word;">
-                <strong>{note_number}:</strong> {note}
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            for note_number, note in notes_with_indices:
+                st.markdown(
+                    f"""
+                    <div style="background-color: #FFEB3B; padding: 10px; margin: 5px 0; border-radius: 5px;
+                    box-shadow: 2px 2px 5px rgba(0,0,0,0.2); font-size: 16px; font-weight: bold; color: black;
+                    max-width: 400px; word-wrap: break-word; white-space: pre-wrap; overflow-wrap: break-word;">
+                    <strong>{note_number}:</strong> {note}
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
-    # Input to delete a sticky note by number
-    note_to_delete = st.text_input("Enter the number of the sticky note you want to delete:")
+        # Input to delete a sticky note by number
+        note_to_delete = st.text_input("Enter the number of the sticky note you want to delete:")
 
-    if st.button("Delete"):
-        if note_to_delete.isdigit():
-            note_to_delete = int(note_to_delete)
+        if st.button("Delete"):
+            if note_to_delete.isdigit():
+                note_to_delete = int(note_to_delete)
 
-            # Ensure the number is valid
-            if 1 <= note_to_delete <= len(st.session_state.sticky_notes):
-                # Adjust index for correct deletion
-                del st.session_state.sticky_notes[note_to_delete - 1]
-                update_sticky_notes(user_id, st.session_state.sticky_notes)  # Update Supabase
-                st.success(f"Sticky Note #{note_to_delete} deleted.")
-                st.rerun()  # Refresh the page
+                # Ensure the number is valid
+                if 1 <= note_to_delete <= len(st.session_state.sticky_notes):
+                    # Adjust index for correct deletion
+                    del st.session_state.sticky_notes[note_to_delete - 1]
+                    update_sticky_notes(user_id, st.session_state.sticky_notes)  # Update Supabase
+                    st.success(f"Sticky Note #{note_to_delete} deleted.")
+                    st.rerun()  # Refresh the page
+                else:
+                    st.error("Invalid note number. Please enter a valid number.")
             else:
-                st.error("Invalid note number. Please enter a valid number.")
-        else:
-            st.error("Please enter a valid number.")
-
-
+                st.error("Please enter a valid number.")
+                
     elif page == "Scheduler":
         st.title("📅 Scheduler")
         st.write("Here you can manage your class schedule and deadlines.")
@@ -212,6 +209,7 @@ def main():
 
         if st.button("Stop Timer"):
             taskTime.stop_timer()
+
         st.title("⏱️ Task Timer")
         st.write("Track how long you spend on each task.")
 
