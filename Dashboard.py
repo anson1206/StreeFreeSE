@@ -90,7 +90,7 @@ def main():
     user_id = st.session_state.get("user_id")
     st.sidebar.title("Navigation")
     page = st.sidebar.radio("Go to",
-                            ["Dashboard", "Scheduler", "To-Do List", "Task Timer", "NCF Website Scraper", "Magic Wand"])
+                            ["Dashboard", "Scheduler", "To-Do List", "Task Timer", "Website Scraper", "Magic Wand"])
 
     if page == "Dashboard":
         st.title("📌 Student Dashboard")
@@ -263,7 +263,7 @@ def main():
 
 
 
-    elif page == "NCF Website Scraper":
+    elif page == "Website Scraper":
         scraper_page()  # Load the scraper page
 
     elif page == "Magic Wand":

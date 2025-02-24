@@ -6,7 +6,7 @@ from streamlit_calendar import calendar
 
 
 def showCalendar():
-    st.markdown("## Interactive Calendar with Event Input 📆")
+    #st.markdown("## Interactive Calendar with Event Input 📆")
     # Debugging prints
     # st.write("Current session state:", st.session_state)
 
