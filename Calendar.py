@@ -4,6 +4,7 @@ import uuid
 import Database as DB
 from streamlit_calendar import calendar
 
+#removes any duplicate events that might be present
 def removeDuplicates(events):
     seen = set()
     unique_events = []
