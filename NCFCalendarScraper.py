@@ -203,17 +203,52 @@ def scraper_page():
 
             if selected_events:
                 save_events_to_database(selected_events, user_id)
-                st.session_state["scraped_events"] = []  # Clear scraped events
-                st.session_state["selected_events"] = []  # Clear selection states
+
+                # 🔄 Ensure scraped events are fully merged into session state "events"
+                if "events" not in st.session_state or not isinstance(st.session_state["events"], list):
+                    st.session_state["events"] = []
+
+                for event in selected_events:
+                    new_event = {
+                        "id": str(uuid.uuid4()),  # Ensure unique ID
+                        "title": event["event"],
+                        "color": "#FF5733",
+                        "start": f"{event['date']}T09:00:00",
+                        "end": f"{event['date']}T10:00:00",
+                        "resource_id": "a",
+                    }
+                    if new_event not in st.session_state["events"]:
+                        st.session_state["events"].append(new_event)
+
+                # 🔄 Trigger UI refresh
+                st.session_state["calendar_refresh"] += 1
+                st.rerun()
             else:
                 st.warning("⚠️ No events selected. Please choose at least one event.")
 
         # "Save All Events" Button
         if st.button("Save All Events"):
             save_events_to_database(st.session_state["scraped_events"], user_id)
-            st.session_state["scraped_events"] = []  # Clear scraped events
-            st.session_state["selected_events"] = []  # Clear selection states
 
+            # 🔄 Ensure all scraped events are merged into session state "events"
+            if "events" not in st.session_state or not isinstance(st.session_state["events"], list):
+                st.session_state["events"] = []
+
+            for event in st.session_state["scraped_events"]:
+                new_event = {
+                    "id": str(uuid.uuid4()),
+                    "title": event["event"],
+                    "color": "#FF5733",
+                    "start": f"{event['date']}T09:00:00",
+                    "end": f"{event['date']}T10:00:00",
+                    "resource_id": "a",
+                }
+                if new_event not in st.session_state["events"]:
+                    st.session_state["events"].append(new_event)
+
+            # 🔄 Trigger UI refresh
+            st.session_state["calendar_refresh"] += 1
+            st.rerun()
 
 
 
