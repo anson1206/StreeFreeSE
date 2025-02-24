@@ -81,9 +81,13 @@ def update_event(event_id, updated_event):
 
 
 def delete_event(event_id):
-    """Delete an event from Supabase."""
-    response = supabase.table("events").delete().eq("id", event_id).execute()
-    return response
+    try:
+        # Ensure event_id is treated as a string (UUID)
+        response = supabase.table("events").delete().eq("id", str(event_id)).execute()
+        return response
+    except Exception as e:
+        st.error(f"Database error: {e}")
+
 
 
 def login_page():

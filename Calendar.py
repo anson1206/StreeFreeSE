@@ -4,7 +4,7 @@ import uuid
 import Database as DB
 from streamlit_calendar import calendar
 
-#removes any duplicate events that might be present
+
 def removeDuplicates(events):
     seen = set()
     unique_events = []
@@ -18,10 +18,26 @@ def removeDuplicates(events):
     return unique_events
 
 
+def syncNewEvents():
+    """Ensures newly created events get assigned a valid ID and syncs them to the database."""
+    user_id = st.session_state.get("user_id")
+    if not user_id:
+        return  # Ensure user is logged in before proceeding
+
+    db_events = DB.load_events(user_id) or []  # ✅ Prevent NoneType error
+    local_events = st.session_state.get("events", [])
+
+    for local_event in local_events:
+        if "id" not in local_event or not local_event["id"]:
+            local_event["id"] = str(uuid.uuid4())  # Assign missing IDs
+
+    # Remove duplicates and ensure all events are synced
+    st.session_state["events"] = removeDuplicates(local_events + db_events)
+
+
 def showCalendar():
     if 'events' not in st.session_state or st.session_state['events'] is None:
-        st.session_state['events'] = []  # Initialize it as an empty list
-        st.write("Initialized events:", st.session_state["events"])
+        st.session_state['events'] = []
 
     if "selected_event" not in st.session_state:
         st.session_state["selected_event"] = None
@@ -29,23 +45,16 @@ def showCalendar():
     if "calendar_refresh" not in st.session_state:
         st.session_state["calendar_refresh"] = 0
 
-    if len(st.session_state["events"]) == 0 and st.session_state.get("user_id"):
-        events_from_db = DB.load_events(st.session_state["user_id"])
-        st.write("Loaded events:", events_from_db)
-
-        if events_from_db is None:
-            events_from_db = []  # Convert None to an empty list if needed
-
-        st.session_state["events"] = events_from_db
-
-    st.session_state["events"] = removeDuplicates(st.session_state["events"])
+    syncNewEvents()  # Ensure events are properly synced before displaying the calendar
 
     st.header("Calendar Mode Selection")
     mode = st.selectbox(
         "Calendar Mode:",
-        ("daygrid", "timegrid", "timeline", "resource-daygrid", "resource-timegrid", "resource-timeline", "list", "multimonth")
+        ("daygrid", "timegrid", "timeline", "resource-daygrid", "resource-timegrid", "resource-timeline", "list",
+         "multimonth")
     )
 
+    # Adding new event form
     st.header("Add Events to the Calendar")
     with st.expander("Add a New Event"):
         with st.form("event_form"):
@@ -70,7 +79,7 @@ def showCalendar():
                     for i in range(num_days):
                         event_date = start_date + datetime.timedelta(days=i)
                         new_event = {
-                            "id": str(uuid.uuid4()),  # Add unique id immediately
+                            "id": str(uuid.uuid4()),
                             "title": title,
                             "color": color,
                             "start": f"{event_date}T{start_time}",
@@ -79,9 +88,11 @@ def showCalendar():
                         }
                         if new_event["title"]:
                             st.session_state["events"].append(new_event)
-                            DB.save_event(new_event, st.session_state["user_id"])  # Save event to the database
+                            DB.save_event(new_event, st.session_state["user_id"])
+
                     st.session_state["events"] = removeDuplicates(st.session_state["events"])
                     st.success(f"✅ Event '{title}' added!")
+                    st.rerun()  # Ensure the UI updates properly
 
     # Calendar resources
     calendar_resources = [
@@ -101,61 +112,16 @@ def showCalendar():
         "selectable": "true",
     }
 
-    # Set specific calendar options based on selected mode
-    if "resource" in mode:
-        if mode == "resource-daygrid":
-            calendar_options.update({
-                "initialDate": str(datetime.date.today()),
-                "initialView": "resourceDayGridDay",
-                "resourceGroupField": "building",
-            })
-        elif mode == "resource-timeline":
-            calendar_options.update({
-                "headerToolbar": {
-                    "left": "today prev,next",
-                    "center": "title",
-                    "right": "resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth",
-                },
-                "initialDate": str(datetime.date.today()),
-                "initialView": "resourceTimelineDay",
-                "resourceGroupField": "building",
-            })
-        elif mode == "resource-timegrid":
-            calendar_options.update({
-                "initialDate": str(datetime.date.today()),
-                "initialView": "resourceTimeGridDay",
-                "resourceGroupField": "building",
-            })
-    else:
-        if mode == "daygrid":
-            calendar_options.update({
-                "headerToolbar": {
-                    "left": "today prev,next",
-                    "center": "title",
-                    "right": "dayGridDay,dayGridWeek,dayGridMonth",
-                },
-                "initialDate": str(datetime.date.today()),
-                "initialView": "dayGridMonth",
-            })
-        elif mode == "timegrid":
-            calendar_options.update({"initialView": "timeGridWeek"})
-        elif mode == "timeline":
-            calendar_options.update({
-                "headerToolbar": {
-                    "left": "today prev,next",
-                    "center": "title",
-                    "right": "timelineDay,timelineWeek,timelineMonth",
-                },
-                "initialDate": str(datetime.date.today()),
-                "initialView": "timelineMonth",
-            })
-        elif mode == "list":
-            calendar_options.update({
-                "initialDate": str(datetime.date.today()),
-                "initialView": "listMonth",
-            })
-        elif mode == "multimonth":
-            calendar_options.update({"initialView": "multiMonthYear"})
+    if mode == "daygrid":
+        calendar_options.update({"initialView": "dayGridMonth"})
+    elif mode == "timegrid":
+        calendar_options.update({"initialView": "timeGridWeek"})
+    elif mode == "timeline":
+        calendar_options.update({"initialView": "timelineMonth"})
+    elif mode == "list":
+        calendar_options.update({"initialView": "listMonth"})
+    elif mode == "multimonth":
+        calendar_options.update({"initialView": "multiMonthYear"})
 
     # Render the calendar
     state = calendar(
@@ -170,23 +136,14 @@ def showCalendar():
         key=f"{mode}-{len(st.session_state['events'])}-{st.session_state.get('calendar_refresh', 0)}",
     )
 
-    # Update session state when events are modified in the UI
     if state.get("eventsSet") is not None:
         if isinstance(state["eventsSet"], list):
             st.session_state["events"] = state["eventsSet"]
 
-    # Assuming you're storing events in session_state["events"]
     if state.get("eventClick") is not None:
-        # Print all events in session state for debugging
-        # st.write("All events in session state:", st.session_state.get("events", []))
-
-        # Print clicked event details for debugging
         if "eventClick" in state and "event" in state["eventClick"] and "id" in state["eventClick"]["event"]:
             clicked_event_id = state["eventClick"]["event"]["id"]
-            # st.write("Clicked event ID:", clicked_event_id)
-
             try:
-                # Attempt to find the event based on id
                 st.session_state["selected_event"] = next(
                     (event for event in st.session_state.get("events", []) if
                      str(event.get("id")) == str(clicked_event_id)), None
@@ -199,12 +156,12 @@ def showCalendar():
                 st.error(f"Error processing event click: {e}")
         else:
             st.write("No event clicked or event ID not found.")
+
     # Edit or delete selected event
     if st.session_state["selected_event"]:
         with st.form("edit_event_form"):
             st.write("### Edit Event")
 
-            # Input fields for editing event details
             title = st.text_input("Event Title", st.session_state["selected_event"]["title"])
             color = st.color_picker("Pick a Color", st.session_state["selected_event"]["color"])
             start_date = st.date_input("Start Date", datetime.date.fromisoformat(
@@ -215,17 +172,15 @@ def showCalendar():
                 st.session_state["selected_event"]["start"].split("T")[1]))
             end_time = st.time_input("End Time", datetime.time.fromisoformat(
                 st.session_state["selected_event"]["end"].split("T")[1]))
-            resource_id = st.selectbox(
-                "Resource ID", ["a", "b", "c", "d", "e", "f"],
-                index=["a", "b", "c", "d", "e", "f"].index(st.session_state["selected_event"]["resource_id"])
-            )
+            resource_id = st.selectbox("Resource ID", ["a", "b", "c", "d", "e", "f"],
+                                       index=["a", "b", "c", "d", "e", "f"].index(
+                                           st.session_state["selected_event"]["resource_id"]))
 
-            # Submit buttons for updating or deleting the event
             update_submitted = st.form_submit_button("Update Event")
             delete_submitted = st.form_submit_button("Delete Event")
 
             if update_submitted:
-                # Find the event index in the list
+                # Find the event in session state and update it
                 for event in st.session_state["events"]:
                     if event["id"] == st.session_state["selected_event"]["id"]:
                         event.update({
@@ -236,6 +191,7 @@ def showCalendar():
                             "resource_id": resource_id,
                         })
                         break
+
                 # Update the event in the database
                 DB.update_event(st.session_state["selected_event"]["id"], {
                     "title": title,
@@ -244,15 +200,23 @@ def showCalendar():
                     "end": f"{end_date}T{end_time}",
                     "resource_id": resource_id,
                 })
-                st.success(f"✅ Event '{title}' updated!")
+
+                # Reset selected event and trigger calendar refresh
                 st.session_state["selected_event"] = None
-                st.session_state["calendar_refresh"] += 1  # Increment to trigger re-render
-                st.rerun()
+                st.session_state["calendar_refresh"] += 1  # Increment refresh counter
+
+                st.success(f"✅ Event '{title}' updated!")
+                st.rerun()  # 🔄 Rerun to close edit form and refresh calendar
 
             if delete_submitted:
+                # Remove the event from session state and database
                 st.session_state["events"].remove(st.session_state["selected_event"])
-                st.success(f"✅ Event '{title}' deleted!")
                 DB.delete_event(st.session_state["selected_event"]["id"])
+
+                # Reset selected event and trigger calendar refresh
                 st.session_state["selected_event"] = None
-                st.session_state["calendar_refresh"] += 1  # Increment to trigger re-render
-                st.rerun()
+                st.session_state["calendar_refresh"] += 1  # Increment refresh counter
+
+                st.success(f"✅ Event '{title}' deleted!")
+                st.rerun()  # 🔄 Rerun to remove the edit form from the UI
+

@@ -35,6 +35,13 @@ def popup():
 
     # Debug: Check current time and day
     st.write(f"Current time: {current_time}, Current day: {current_day}")
+    st.write("CEO Hours: 8 am - 5 pm")
+    st.write("WRC Hours: 8 am - 5 pm")
+    st.write("CWC Hours: 8 am - 5 pm")
+    st.write("QRC Hours: 8 am - 5 pm")
+    st.link_button("Go to WRC Appointment Site", "https://ncf.mywconline.com/")
+
+    st.write("HAM Hours: ")
 
     for meal, open_time, closing_time in dining_hours[current_day]:
         # Debug: Check dining hall hours
@@ -48,6 +55,7 @@ def popup():
         elif now.strftime("%I:%M %p") > closing_time:
             st.toast(f"Reminder: Dining hall {meal} is closed!", icon="🍽️")
             st.session_state["last_popup"] = time.time()
+
 
 def randomImage():
     if "show_image" not in st.session_state:
