@@ -4,49 +4,52 @@ import uuid
 import Database as DB
 from streamlit_calendar import calendar
 
+def removeDuplicates(events):
+    seen = set()
+    unique_events = []
+    for event in events:
+        if "id" not in event or not event["id"]:
+            event["id"] = str(uuid.uuid4())
+        event_key = (event["title"], event["start"], event["end"], event["resource_id"])
+        if event_key not in seen:
+            unique_events.append(event)
+            seen.add(event_key)
+    return unique_events
+
 
 def showCalendar():
-    #st.markdown("## Interactive Calendar with Event Input 📆")
-    # Debugging prints
-    # st.write("Current session state:", st.session_state)
-
     if 'events' not in st.session_state or st.session_state['events'] is None:
         st.session_state['events'] = []  # Initialize it as an empty list
         st.write("Initialized events:", st.session_state["events"])
 
-    # Ensure session state contains a selected event
     if "selected_event" not in st.session_state:
         st.session_state["selected_event"] = None
 
     if "calendar_refresh" not in st.session_state:
         st.session_state["calendar_refresh"] = 0
 
-    # Proceed to load events from the database if not already loaded
     if len(st.session_state["events"]) == 0 and st.session_state.get("user_id"):
         events_from_db = DB.load_events(st.session_state["user_id"])
         st.write("Loaded events:", events_from_db)
 
-        # Ensure the loaded events are a list
         if events_from_db is None:
             events_from_db = []  # Convert None to an empty list if needed
 
         st.session_state["events"] = events_from_db
 
-    # Calendar mode selection
+    st.session_state["events"] = removeDuplicates(st.session_state["events"])
+
     st.header("Calendar Mode Selection")
     mode = st.selectbox(
         "Calendar Mode:",
-        ("daygrid", "timegrid", "timeline", "resource-daygrid", "resource-timegrid", "resource-timeline", "list",
-         "multimonth")
+        ("daygrid", "timegrid", "timeline", "resource-daygrid", "resource-timegrid", "resource-timeline", "list", "multimonth")
     )
 
-    # Event input form inside an expander
     st.header("Add Events to the Calendar")
     with st.expander("Add a New Event"):
         with st.form("event_form"):
             st.write("### Add a New Event")
 
-            # Input fields for event details
             title = st.text_input("Event Title")
             color = st.color_picker("Pick a Color", "#FF6C6C")
             start_date = st.date_input("Start Date", datetime.date.today())
@@ -55,31 +58,28 @@ def showCalendar():
             end_time = st.time_input("End Time", datetime.time(10, 0))
             resource_id = st.selectbox("Resource ID", ["a", "b", "c", "d", "e", "f"], index=0)
 
-            # Submit button for the form
             submitted = st.form_submit_button("Add Event")
 
             if submitted:
-                # Check if the end date is before the start date
                 if end_date < start_date:
                     st.error("End date cannot be before start date. Please select a valid date range.")
                 else:
-                    # Calculate the number of days between start and end dates
                     num_days = (end_date - start_date).days + 1
 
-                    # Create separate events for each day within the date range
                     for i in range(num_days):
                         event_date = start_date + datetime.timedelta(days=i)
                         new_event = {
-                            "id": str(uuid.uuid4()),  # Add unique id
+                            "id": str(uuid.uuid4()),  # Add unique id immediately
                             "title": title,
                             "color": color,
                             "start": f"{event_date}T{start_time}",
                             "end": f"{event_date}T{end_time}",
                             "resource_id": resource_id,
                         }
-                        if new_event not in st.session_state["events"] and new_event["title"]:
+                        if new_event["title"]:
                             st.session_state["events"].append(new_event)
                             DB.save_event(new_event, st.session_state["user_id"])  # Save event to the database
+                    st.session_state["events"] = removeDuplicates(st.session_state["events"])
                     st.success(f"✅ Event '{title}' added!")
 
     # Calendar resources
@@ -177,25 +177,27 @@ def showCalendar():
     # Assuming you're storing events in session_state["events"]
     if state.get("eventClick") is not None:
         # Print all events in session state for debugging
-        #st.write("All events in session state:", st.session_state.get("events", []))
-        
+        # st.write("All events in session state:", st.session_state.get("events", []))
+
         # Print clicked event details for debugging
-        clicked_event_id = state["eventClick"]["event"]["id"]
-        #st.write("Clicked event ID:", clicked_event_id)
+        if "eventClick" in state and "event" in state["eventClick"] and "id" in state["eventClick"]["event"]:
+            clicked_event_id = state["eventClick"]["event"]["id"]
+            # st.write("Clicked event ID:", clicked_event_id)
 
-        try:
-            # Attempt to find the event based on id
-            st.session_state["selected_event"] = next(
-                (event for event in st.session_state.get("events", []) if
-                 str(event.get("id")) == str(clicked_event_id)), None
-            )
-            if st.session_state["selected_event"]:
-                st.write(f"Event '{st.session_state['selected_event']['title']}' selected!")
-            else:
-                st.error(f"No event found with id {clicked_event_id}")
-        except KeyError as e:
-            st.error(f"Error processing event click: {e}")
-
+            try:
+                # Attempt to find the event based on id
+                st.session_state["selected_event"] = next(
+                    (event for event in st.session_state.get("events", []) if
+                     str(event.get("id")) == str(clicked_event_id)), None
+                )
+                if st.session_state["selected_event"]:
+                    st.write(f"Event '{st.session_state['selected_event']['title']}' selected!")
+                else:
+                    st.error(f"No event found with id {clicked_event_id}")
+            except KeyError as e:
+                st.error(f"Error processing event click: {e}")
+        else:
+            st.write("No event clicked or event ID not found.")
     # Edit or delete selected event
     if st.session_state["selected_event"]:
         with st.form("edit_event_form"):
