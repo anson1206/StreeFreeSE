@@ -16,13 +16,13 @@ url = "https://rpygalqqsnuajcsdbkut.supabase.co"
 key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJweWdhbHFxc251YWpjc2Ria3V0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAxNjg3MDYsImV4cCI6MjA1NTc0NDcwNn0.ZFgjCTQAiHCuwubyfP1tdTajHRG96XsZWoPIRZYT60o"  # Replace with your Supabase API key
 supabase: Client = create_client(url, key)
 
-def fetch_sticky_notes(user_id):  
+def fetch_sticky_notes(user_id):
     """Retrieve sticky notes from Supabase for the given user_id."""
     response = supabase.table("events").select("sticky_notes").eq("user_id", user_id).execute()
 
-    if response.data:
-        # Convert the JSON string back to a list
-        return json.loads(response.data[0]["sticky_notes"])
+    if response.data and response.data[0]["sticky_notes"]:  # Ensure sticky_notes is not None
+        return json.loads(response.data[0]["sticky_notes"])  
+    
     return []  # Return an empty list if no data exists
 
 def update_sticky_notes(user_id, sticky_notes):
@@ -44,6 +44,45 @@ def update_sticky_notes(user_id, sticky_notes):
         }).execute()
 
     return response
+
+def calculate_weekly_event_hours():
+    """Calculate the total hours spent on each event type per week."""
+    if "events" not in st.session_state or not st.session_state["events"]:
+        st.write("No events found in the calendar.")
+        return
+
+    now = datetime.now()
+    week_start = now - timedelta(days=now.weekday())  # Start of the current week (Monday at 00:00)
+    week_end = week_start + timedelta(days=6, hours=23, minutes=59)  # End of the week (Sunday at 23:59)
+
+    event_durations = {}
+
+    for event in st.session_state["events"]:
+        event_start = datetime.fromisoformat(event["start"])
+        event_end = datetime.fromisoformat(event["end"])
+
+        # Adjust start and end times if event spans beyond the week
+        adjusted_start = max(event_start, week_start)  # Clamp to start of the week
+        adjusted_end = min(event_end, week_end)  # Clamp to end of the week
+
+        duration = (adjusted_end - adjusted_start).total_seconds() / 3600  # Convert to hours
+        duration = max(0, duration)  # Prevent negative durations
+
+        event_name = event["title"]
+
+        if event_name in event_durations:
+            event_durations[event_name] += duration
+        else:
+            event_durations[event_name] = duration
+
+    if event_durations:
+        st.subheader("⏳ Weekly Event Hours Breakdown")
+        for event_name, hours in event_durations.items():
+            st.write(f"📌 **{event_name}**: {hours:.2f} hours")
+    else:
+        st.write("No tracked events for this week.")
+
+
 
 def main():
     user_id = st.session_state.get("user_id") 
@@ -77,6 +116,8 @@ def main():
                     st.write("No upcoming events in the next 7 days.")
 
         Calendar.showCalendar()
+         # Display weekly event hours tracking
+        calculate_weekly_event_hours()
 
         # Display To-Do List
         st.subheader("✅ To-Do List")
