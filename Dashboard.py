@@ -49,34 +49,40 @@ def update_sticky_notes(user_id, sticky_notes):
 
 
 def calculate_weekly_event_hours():
-    """Calculate the total hours spent on each event type per week."""
+    """Calculate the total hours spent on each event type within the current week (Monday-Sunday)."""
     if "events" not in st.session_state or not st.session_state["events"]:
         st.write("No events found in the calendar.")
         return
 
     now = datetime.now()
-    week_start = now - timedelta(days=now.weekday())  # Start of the current week (Monday at 00:00)
-    week_end = week_start + timedelta(days=6, hours=23, minutes=59)  # End of the week (Sunday at 23:59)
+    week_start = datetime(now.year, now.month, now.day) - timedelta(days=now.weekday())  # Monday 00:00
+    week_end = week_start + timedelta(days=6, hours=23, minutes=59, seconds=59)  # Sunday 23:59:59
 
     event_durations = {}
 
     for event in st.session_state["events"]:
-        event_start = datetime.fromisoformat(event["start"])
-        event_end = datetime.fromisoformat(event["end"])
+        try:
+            event_start = datetime.fromisoformat(event["start"])
+            event_end = datetime.fromisoformat(event["end"])
 
-        # Adjust start and end times if event spans beyond the week
-        adjusted_start = max(event_start, week_start)  # Clamp to start of the week
-        adjusted_end = min(event_end, week_end)  # Clamp to end of the week
+            # Ensure event_end is properly set (fixing zero-length events)
+            if event_end <= event_start:
+                event_end = event_start + timedelta(minutes=1)  # Assume a minimum duration
 
-        duration = (adjusted_end - adjusted_start).total_seconds() / 3600  # Convert to hours
-        duration = max(0, duration)  # Prevent negative durations
+            # Adjust event start and end within the week boundaries
+            adjusted_start = max(event_start, week_start)
+            adjusted_end = min(event_end, week_end)
 
-        event_name = event["title"]
+            # Calculate valid duration (in hours)
+            duration = (adjusted_end - adjusted_start).total_seconds() / 3600
+            duration = max(0, duration)  # Ensure no negative durations
 
-        if event_name in event_durations:
-            event_durations[event_name] += duration
-        else:
-            event_durations[event_name] = duration
+            if duration > 0:
+                event_name = event["title"]
+                event_durations[event_name] = event_durations.get(event_name, 0) + duration
+
+        except Exception as e:
+            st.write(f"Error processing event '{event.get('title', 'Unknown Event')}': {e}")
 
     if event_durations:
         st.subheader("⏳ Weekly Event Hours Breakdown")

@@ -177,11 +177,11 @@ def showCalendar():
     # Assuming you're storing events in session_state["events"]
     if state.get("eventClick") is not None:
         # Print all events in session state for debugging
-        st.write("All events in session state:", st.session_state.get("events", []))
-
+        #st.write("All events in session state:", st.session_state.get("events", []))
+        
         # Print clicked event details for debugging
         clicked_event_id = state["eventClick"]["event"]["id"]
-        st.write("Clicked event ID:", clicked_event_id)
+        #st.write("Clicked event ID:", clicked_event_id)
 
         try:
             # Attempt to find the event based on id
@@ -189,7 +189,6 @@ def showCalendar():
                 (event for event in st.session_state.get("events", []) if
                  str(event.get("id")) == str(clicked_event_id)), None
             )
-
             if st.session_state["selected_event"]:
                 st.write(f"Event '{st.session_state['selected_event']['title']}' selected!")
             else:
