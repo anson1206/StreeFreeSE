@@ -6,10 +6,11 @@ from NCFCalendarScraper import scraper_page  # Import scraper page
 import Calendar
 from datetime import datetime, timedelta
 from MagicWand import magic_wand
-from Scheduler import popup
+from Scheduler import popup, randomImage
 from TaskTimer import TaskTime
 from supabase import create_client, Client
 import json
+
 
 # Initialize Supabase
 url = "https://rpygalqqsnuajcsdbkut.supabase.co"
@@ -193,6 +194,8 @@ def main():
     elif page == "Scheduler":
         st.title("📅 Scheduler")
         st.write("Here you can manage your class schedule and deadlines.")
+        popup()
+        randomImage()
 
     elif page == "Task Timer":
         st.title("⏱️ Task Timer")
@@ -275,6 +278,4 @@ def main():
     elif page == "Magic Wand":
         magic_wand()
 
-    elif page == "Scheduler":
-        popup()
 
