@@ -72,17 +72,17 @@ def randomImage():
     if "show_image" not in st.session_state:
         st.session_state["show_image"] = False
 
-    if st.button("Show Random Image and dining hall message"):
+    if st.button("Show Random Image and Popup Message"):
         st.session_state["show_image"] = not st.session_state["show_image"]
 
     if st.session_state["show_image"]:
         memelinks = [
-            "https://i.insider.com/674df55be45a68623a276ce1?width=1000&format=jpeg&auto=webp",
-            "https://images.saatchiart.com/saatchi/1678766/art/7982375/7049784-HSC00002-7.jpg",
             "https://i.pinimg.com/564x/e9/03/d9/e903d94d703f3e12eb34b28698e19e8b.jpg",
             "https://www.photory.app/_next/static/images/Confidence%20meme-e356aadf3ce8579d5d10e9eddd087cec.jpg",
             "https://i.pinimg.com/736x/11/7a/06/117a06da233d2b377d392b8a877f7e58.jpg",
-            "https://i.pinimg.com/564x/64/60/e3/6460e3ca975aec7fcaaf32583e70ae25.jpg"
+            "https://i.pinimg.com/564x/64/60/e3/6460e3ca975aec7fcaaf32583e70ae25.jpg",
+            "https://www.coolfunnyquotes.com/images/quotes/smile-like-a-monkey-with-a-new.jpg",
+            
         ]
 
         if memelinks:

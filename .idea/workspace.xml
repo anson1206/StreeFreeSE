@@ -6,10 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9bd55780-6123-4666-817c-fa88280c9b98" name="Changes" comment="Added popups to tasktimer and scheduler">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Calendar.py" beforeDir="false" afterPath="$PROJECT_DIR$/Calendar.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dashboard.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Scheduler.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scheduler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
