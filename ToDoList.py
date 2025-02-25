@@ -42,7 +42,7 @@ class todo:
                         else:
                             st.session_state['kudoPoints'] = 10  # Initialize if not a valid integer
                         # Move task from "In Progress" or "Important" to "Done"
-                        if task["label"] in ["In Progress", "Important"]:
+                        if task["label"] in ["Doing", "Important"]:
                             task["label"] = "Done"
                         st.rerun()
 

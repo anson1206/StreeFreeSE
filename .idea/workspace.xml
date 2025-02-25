@@ -4,12 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9bd55780-6123-4666-817c-fa88280c9b98" name="Changes" comment="meme button shows but no popups">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="9bd55780-6123-4666-817c-fa88280c9b98" name="Changes" comment="done completely fixed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Calendar.py" beforeDir="false" afterPath="$PROJECT_DIR$/Calendar.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Database.py" beforeDir="false" afterPath="$PROJECT_DIR$/Database.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scheduler.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scheduler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dashboard.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MagicWand.py" beforeDir="false" afterPath="$PROJECT_DIR$/MagicWand.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NCFCalendarScraper.py" beforeDir="false" afterPath="$PROJECT_DIR$/NCFCalendarScraper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ToDoList.py" beforeDir="false" afterPath="$PROJECT_DIR$/ToDoList.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,7 +98,7 @@
       <updated>1740290510912</updated>
       <workItem from="1740290512240" duration="2728000" />
       <workItem from="1740353462153" duration="10424000" />
-      <workItem from="1740435924971" duration="2864000" />
+      <workItem from="1740435924971" duration="4990000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />
@@ -164,7 +164,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740368741075</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="done completely fixed">
+      <option name="closed" value="true" />
+      <created>1740438915121</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1740438915121</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -186,7 +194,8 @@
     <MESSAGE value=" he" />
     <MESSAGE value="Scraper Done" />
     <MESSAGE value="meme button shows but no popups" />
-    <option name="LAST_COMMIT_MESSAGE" value="meme button shows but no popups" />
+    <MESSAGE value="done completely fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="done completely fixed" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/StreeFreeSE$main.coverage" NAME="main Coverage Results" MODIFIED="1740436408594" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

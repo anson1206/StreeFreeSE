@@ -91,7 +91,7 @@ class NCFCalendarScraper:
         date_text = date_text.replace("–", "-")  # Normalize dashes
         current_year = datetime.datetime.today().year  # Get current year
 
-        # 🔹 Handle date ranges (e.g., "Apr 9 - Aug 30")
+        # Handle date ranges (e.g., "Apr 9 - Aug 30")
         match = re.search(r"(\b[A-Za-z]{3,9}) (\d{1,2})\s*-\s*(\b[A-Za-z]{3,9})? (\d{1,2}),?\s*(\d{4})?", date_text)
         if match:
             start_month, start_day, end_month, end_day, year = match.groups()
@@ -101,7 +101,7 @@ class NCFCalendarScraper:
                 end_month = start_month  # If only one month is provided, assume same month
             date_text = f"{start_month} {start_day}, {year}"  # Take the start date only
 
-        # 🔹 Handle single dates (e.g., "Mon, Sept 2" or "Wed, July 4")
+        # Handle single dates (e.g., "Mon, Sept 2" or "Wed, July 4")
         match = re.search(r"(\b[A-Za-z]{3,9}) (\d{1,2}),?\s*(\d{4})?", date_text)
         if match:
             month, day, year = match.groups()
@@ -109,14 +109,14 @@ class NCFCalendarScraper:
                 year = current_year  # If year is missing, use current year
             date_text = f"{month} {day}, {year}"
 
-        # 🔹 Common date formats
+        # Common date formats
         date_formats = [
             "%b %d, %Y",  # Example: "Jan 22, 2024"
             "%B %d, %Y",  # Example: "January 22, 2024"
             "%m/%d/%Y",  # Example: "01/22/2024"
         ]
 
-        # 🔹 Try parsing the extracted date
+        # Try parsing the extracted date
         for fmt in date_formats:
             try:
                 return datetime.datetime.strptime(date_text, fmt).date()
@@ -152,11 +152,11 @@ def save_events_to_database(events, user_id):
                 "resource_id": "a",  # Default resource (can be changed)
             }
 
-            # ✅ Add to session state just like manually added events
+            # Add to session state just like manually added events
             if new_event not in st.session_state["events"]:
                 st.session_state["events"].append(new_event)
 
-            # ✅ Save to Supabase exactly like manually added events
+            # Save to Supabase exactly like manually added events
             DB.save_event(new_event, user_id)
 
         except Exception as e:

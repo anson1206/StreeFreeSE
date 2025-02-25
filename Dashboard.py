@@ -190,7 +190,6 @@ def main():
                 
     elif page == "Scheduler":
         st.title("📅 Scheduler")
-        st.write("Here you can manage your class schedule and deadlines.")
         popup()
         randomImage()
 
@@ -199,7 +198,7 @@ def main():
         st.write("Track how long you spend on each task.")
 
         taskTime = TaskTime()
-        task_name = st.text_input("Enter the task name")
+        task_name = st.text_input("ENTER TASK NAME:")
 
         if st.button("Start Timer"):
             if task_name.strip():
@@ -209,13 +208,13 @@ def main():
 
         if st.button("Stop Timer"):
             taskTime.stop_timer()
-
-        st.title("⏱️ Task Timer")
-        st.write("Track how long you spend on each task.")
+        st.write("\n")
+        st.title("Task Times")
+        st.write("CURRENT TASK:")
 
         taskTime.display_timer()
         taskTime.show_task_times()
-        task_delete = st.number_input("Enter the task number you want to delete", min_value=1, step=1)
+        task_delete = st.number_input("ENTER TASK NUMBER FOR DELETION:", min_value=1, step=1)
         if st.button("Delete Task"):
             taskTime.delete_task(task_delete - 1)
             st.success(f"Task #{task_delete} deleted.")
@@ -249,12 +248,12 @@ def main():
         with col1:
             st.header("Create")
             userInput = st.text_input("Enter a task")
-            label = st.selectbox("Label", ["In Progress", "Important", "Done"])
+            label = st.selectbox("Label", ["Doing", "Important", "Done"])
             if st.button("Add Task"):
                 todo.add_task(userInput, label)
         with col2:
             st.header("Doing")
-            todo.display_tasks("In Progress")
+            todo.display_tasks("Doing")
         with col3:
             st.header("Important")
             todo.display_tasks("Important")
@@ -274,6 +273,6 @@ def main():
         scraper_page()  # Load the scraper page
 
     elif page == "Magic Wand":
-        magic_wand()
+        magic_wand() #load magic wand
 
 
