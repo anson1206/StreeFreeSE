@@ -4,6 +4,7 @@ import streamlit as st
 import pandas as pd
 from Timer import Timer
 from supabase import create_client
+import time
 
 # Initialize Supabase
 supabase_url = "https://rpygalqqsnuajcsdbkut.supabase.co"
@@ -44,7 +45,10 @@ class todo:
                         # Move task from "In Progress" or "Important" to "Done"
                         if task["label"] in ["Doing", "Important"]:
                             task["label"] = "Done"
+                        st.balloons()
+                        time.sleep(2)  # Wait for 2 seconds to display balloons
                         st.rerun()
+                        
 
     def get_kudo_points_from_db(self):
         """ Fetch the user's kudo points from Supabase """
