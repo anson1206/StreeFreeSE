@@ -17,7 +17,7 @@ class todo:
         self.user_id = user_id  # Store user_id
         if 'kudoPoints' not in st.session_state:
             # Fetch from DB and ensure it doesn't return None
-            st.session_state['kudoPoints'] = self.get_kudo_points_from_db() or 0  # Fallback to 0 if None
+            st.session_state['kudoPoints'] = self.get_kudo_points_from_db() or 0
 
     def add_task(self, task, label):
         if 'todoList' not in st.session_state:
@@ -39,14 +39,14 @@ class todo:
                         # Ensure 'kudoPoints' is an integer before incrementing
                         if isinstance(st.session_state['kudoPoints'], int):
                             st.session_state['kudoPoints'] += 10  # Add points
-                            self.update_kudo_points_in_db(10)  # Update DB
+                            self.update_kudo_points_in_db(10)
                         else:
-                            st.session_state['kudoPoints'] = 10  # Initialize if not a valid integer
+                            st.session_state['kudoPoints'] = 10
                         # Move task from "In Progress" or "Important" to "Done"
                         if task["label"] in ["Doing", "Important"]:
                             task["label"] = "Done"
                         st.balloons()
-                        time.sleep(2)  # Wait for 2 seconds to display balloons
+                        time.sleep(2)
                         st.rerun()
                         
 
@@ -54,13 +54,13 @@ class todo:
         """ Fetch the user's kudo points from Supabase """
         response = supabase.table("events").select("kudo_points").eq("user_id", self.user_id).execute()
         if response.data:
-            return response.data[0]["kudo_points"]  # Return stored points
-        return 0  # Default if no record found
+            return response.data[0]["kudo_points"]
+        return 0
 
     def update_kudo_points_in_db(self, points):
         """ Update kudo points in Supabase """
-        current_points = self.get_kudo_points_from_db()  # Get current points
-        if current_points is None:  # Just in case the value is None
+        current_points = self.get_kudo_points_from_db()
+        if current_points is None:
             current_points = 0
-        new_points = current_points + points  # Add new points
+        new_points = current_points + points
         supabase.table("events").update({"kudo_points": new_points}).eq("user_id", self.user_id).execute()

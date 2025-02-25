@@ -8,13 +8,19 @@ def popup():
     # Ensure session state has a counter
     if "last_popup" not in st.session_state:
         st.session_state["last_popup"] = time.time()
+    if"last_break" not in st.session_state:
+        st.session_state["last_break"] = time.time()
 
 
-
-    # Show pop-up every 10 seconds
-    if time.time() - st.session_state["last_popup"] > 10:  # Change 10 to any interval you want
+    # Show pop-up
+    if time.time() - st.session_state["last_popup"] > 10:
         st.toast("🔔 Reminder: Check your calendar!", icon="📅")
-        st.session_state["last_popup"] = time.time()  # Reset timer
+        st.session_state["last_popup"] = time.time()
+
+    #Shows break reminder
+    if time.time() - st.session_state["last_break"] > 1:
+        st.toast("🔔 Reminder: Take a break!", icon="🍵")
+        st.session_state["last_break"] = time.time()
 
     # Dining hall hours
     dining_hours = {
@@ -33,7 +39,7 @@ def popup():
     current_time = now.strftime("%I:%M %p")
     current_day = now.strftime("%A")
 
-    # Debug: Check current time and day
+    # Check current time and day
     st.write(f"Current time: {current_time}, Current day: {current_day}")
     st.write("CEO Hours: 8 am - 5 pm")
     st.write("WRC Hours: 8 am - 5 pm")
@@ -43,6 +49,7 @@ def popup():
 
     st.write("HAM Hours: ")
 
+    #Goes through the dining hall hours and checks dinning hall serving times
     for meal, open_time, closing_time in dining_hours[current_day]:
         # Debug: Check dining hall hours
         st.write(f"Checking {meal} hours: {open_time} - {closing_time}")
@@ -56,7 +63,7 @@ def popup():
             st.toast(f"Reminder: Dining hall {meal} is closed!", icon="🍽️")
             st.session_state["last_popup"] = time.time()
 
-
+#Allows the user to get a random image
 def randomImage():
     if "show_image" not in st.session_state:
         st.session_state["show_image"] = False

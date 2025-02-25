@@ -8,13 +8,16 @@ class Timer:
         if "timer_seconds" not in st.session_state:
             st.session_state.timer_seconds = 0
 
+    #Starts the timer
     def start_timer(self, minutes):
         st.session_state.timer_seconds = minutes * 60
         st.session_state.timer_running = True
 
+    #stops the timer
     def stop_timer(self):
         st.session_state.timer_running = False
 
+    #Displays the timer
     def display_timer(self):
         timer_placeholder = st.sidebar.empty()
         while st.session_state.timer_running and st.session_state.timer_seconds > 0:

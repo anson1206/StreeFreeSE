@@ -131,9 +131,9 @@ def main():
         # Display To-Do List
         st.subheader("✅ To-Do List")
         if user_id:
-            todo = ToDoList.todo(user_id)  # Pass user_id when creating an instance
+            todo = ToDoList.todo(user_id)
         else:
-            st.error("User not logged in!")  # Display error if user_id is not available
+            st.error("User not logged in!")
         todo.display_tasks("Important")
 
         # Sticky Notes Section
@@ -147,8 +147,8 @@ def main():
         if st.button("Submit"):
             if note_input.strip():
                 cleaned_note = note_input.strip()
-                st.session_state.sticky_notes.append(cleaned_note)  # Add note to local session state
-                update_sticky_notes(user_id, st.session_state.sticky_notes)  # Update Supabase
+                st.session_state.sticky_notes.append(cleaned_note)
+                update_sticky_notes(user_id, st.session_state.sticky_notes)
 
         # Display Sticky Notes
         if st.session_state.sticky_notes:
@@ -180,7 +180,7 @@ def main():
                 if 1 <= note_to_delete <= len(st.session_state.sticky_notes):
                     # Adjust index for correct deletion
                     del st.session_state.sticky_notes[note_to_delete - 1]
-                    update_sticky_notes(user_id, st.session_state.sticky_notes)  # Update Supabase
+                    update_sticky_notes(user_id, st.session_state.sticky_notes)
                     st.success(f"Sticky Note #{note_to_delete} deleted.")
                     st.rerun()  # Refresh the page
                 else:
@@ -266,17 +266,16 @@ def main():
             todo.display_tasks("Done")
 
         if user_id:
-            todo_instance = ToDoList.todo(user_id)  # Create an instance of todo
+            todo_instance = ToDoList.todo(user_id)
             st.subheader(f"Kudo Points: {todo_instance.get_kudo_points_from_db()}")  # Call the method properly
         else:
-            st.error("User not logged in!")  # Display error if user_id is not available
-
+            st.error("User not logged in!")
 
 
     elif page == "Website Scraper":
-        scraper_page()  # Load the scraper page
+        scraper_page()
 
     elif page == "Magic Wand":
-        magic_wand() #load magic wand
+        magic_wand()
 
 

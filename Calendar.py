@@ -22,9 +22,9 @@ def syncNewEvents():
     """Ensures newly created events get assigned a valid ID and syncs them to the database."""
     user_id = st.session_state.get("user_id")
     if not user_id:
-        return  # Ensure user is logged in before proceeding
+        return
 
-    db_events = DB.load_events(user_id) or []  # ✅ Prevent NoneType error
+    db_events = DB.load_events(user_id) or []
     local_events = st.session_state.get("events", [])
 
     for local_event in local_events:
@@ -45,7 +45,7 @@ def showCalendar():
     if "calendar_refresh" not in st.session_state:
         st.session_state["calendar_refresh"] = 0
 
-    syncNewEvents()  # Ensure events are properly synced before displaying the calendar
+    syncNewEvents()
 
     st.header("Calendar Mode Selection")
     mode = st.selectbox(
@@ -92,7 +92,7 @@ def showCalendar():
 
                     st.session_state["events"] = removeDuplicates(st.session_state["events"])
                     st.success(f"✅ Event '{title}' added!")
-                    st.rerun()  # Ensure the UI updates properly
+                    st.rerun()
 
     # Calendar resources
     calendar_resources = [
@@ -203,10 +203,10 @@ def showCalendar():
 
                 # Reset selected event and trigger calendar refresh
                 st.session_state["selected_event"] = None
-                st.session_state["calendar_refresh"] += 1  # Increment refresh counter
+                st.session_state["calendar_refresh"] += 1
 
                 st.success(f"✅ Event '{title}' updated!")
-                st.rerun()  # 🔄 Rerun to close edit form and refresh calendar
+                st.rerun()
 
             if delete_submitted:
                 # Remove the event from session state and database
@@ -215,8 +215,8 @@ def showCalendar():
 
                 # Reset selected event and trigger calendar refresh
                 st.session_state["selected_event"] = None
-                st.session_state["calendar_refresh"] += 1  # Increment refresh counter
+                st.session_state["calendar_refresh"] += 1
 
                 st.success(f"✅ Event '{title}' deleted!")
-                st.rerun()  # 🔄 Rerun to remove the edit form from the UI
+                st.rerun()
 
