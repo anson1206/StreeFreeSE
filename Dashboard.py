@@ -96,7 +96,7 @@ def calculate_weekly_event_hours():
 def main():
     user_id = st.session_state.get("user_id")
     st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to", ["Dashboard", "Scheduler", "To-Do List", "Task Timer", "Website Scraper", "Magic Wand"])
+    page = st.sidebar.radio("Go to", ["Dashboard", "Calendar", "Scheduler", "To-Do List", "Task Timer", "Website Scraper", "Magic Wand"])
 
     if page == "Dashboard":
         st.title("📌 Student Dashboard")
@@ -187,6 +187,10 @@ def main():
                     st.error("Invalid note number. Please enter a valid number.")
             else:
                 st.error("Please enter a valid number.")
+
+    elif page == "Calendar":
+        st.title('📅 Calendar')
+        Calendar.showCalendar()
                 
     elif page == "Scheduler":
         st.title("📅 Scheduler")
