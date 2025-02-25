@@ -82,8 +82,8 @@ def randomImage():
             "https://i.pinimg.com/736x/11/7a/06/117a06da233d2b377d392b8a877f7e58.jpg",
             "https://i.pinimg.com/564x/64/60/e3/6460e3ca975aec7fcaaf32583e70ae25.jpg",
             "https://www.coolfunnyquotes.com/images/quotes/smile-like-a-monkey-with-a-new.jpg",
-            "https://cdn.trendhunterstatic.com/thumbs/287/inspirational-illustrations.jpeg?auto=webp"
-
+            "https://cdn.trendhunterstatic.com/thumbs/287/inspirational-illustrations.jpeg?auto=webp",
+            "https://i.pinimg.com/736x/16/dd/ab/16ddabc1112a8b6b12aabb35d618ee39.jpg"
         ]
 
         if memelinks:
