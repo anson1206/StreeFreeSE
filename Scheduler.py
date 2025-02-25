@@ -4,6 +4,10 @@ from datetime import datetime
 import pytz
 import random
 
+"""
+Scheduler.py
+This file 
+"""
 def popup():
     # Ensure session state has a counter
     if "last_popup" not in st.session_state:

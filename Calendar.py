@@ -3,8 +3,15 @@ import datetime
 import uuid
 import Database as DB
 from streamlit_calendar import calendar
+"""
+Calendar.oy
+This file contains the code for the calendar feature of the app.
+It handles all the functionalities of the calendar.
+THis includes adding, editing, and deleting events.
 
+"""
 
+#Remove duplicates from the events list
 def removeDuplicates(events):
     seen = set()
     unique_events = []
@@ -140,6 +147,7 @@ def showCalendar():
         if isinstance(state["eventsSet"], list):
             st.session_state["events"] = state["eventsSet"]
 
+    #Checks if the event was clicked
     if state.get("eventClick") is not None:
         if "eventClick" in state and "event" in state["eventClick"] and "id" in state["eventClick"]["event"]:
             clicked_event_id = state["eventClick"]["event"]["id"]
@@ -179,6 +187,7 @@ def showCalendar():
             update_submitted = st.form_submit_button("Update Event")
             delete_submitted = st.form_submit_button("Delete Event")
 
+            #Updates the events with the new information
             if update_submitted:
                 # Find the event in session state and update it
                 for event in st.session_state["events"]:
@@ -208,6 +217,7 @@ def showCalendar():
                 st.success(f"✅ Event '{title}' updated!")
                 st.rerun()
 
+            #Deletes the event the user selected
             if delete_submitted:
                 # Remove the event from session state and database
                 st.session_state["events"].remove(st.session_state["selected_event"])

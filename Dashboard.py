@@ -2,7 +2,7 @@ import streamlit as st
 import ToDoList
 from ToDoList import todo
 from Timer import Timer
-from NCFCalendarScraper import scraper_page  # Import scraper page
+from NCFCalendarScraper import scraper_page
 import Calendar
 from datetime import datetime, timedelta
 from MagicWand import magic_wand
@@ -11,6 +11,13 @@ from TaskTimer import TaskTime
 from supabase import create_client, Client
 import json
 
+"""
+Dashboard.py
+THis file contains the code for the main dashboard of the app.
+The dashboard acts as the main hub for the app and contains all the features.
+The dashboard allows the user to navigate to different pages of the app.
+The dashboard also displays the upcoming events, sticky notes, and weekly event hours.
+"""
 
 # Initialize Supabase
 url = "https://rpygalqqsnuajcsdbkut.supabase.co"
@@ -92,7 +99,7 @@ def calculate_weekly_event_hours():
     else:
         st.write("No tracked events for this week.")
 
-
+#The main function that runs the dashboard
 def main():
     user_id = st.session_state.get("user_id")
     st.sidebar.title("Navigation")
@@ -111,7 +118,7 @@ def main():
             # Filter events occurring within the next 7 days
             upcoming_events = [
                 event for event in st.session_state["events"]
-                if now <= datetime.fromisoformat(event["start"]) <= one_week_later
+                if isinstance(event["start"], str) and now <= datetime.fromisoformat(event["start"]) <= one_week_later
             ]
 
             # Sort events by date

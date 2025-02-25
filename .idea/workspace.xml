@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9bd55780-6123-4666-817c-fa88280c9b98" name="Changes" comment="added more memes">
+    <list default="true" id="9bd55780-6123-4666-817c-fa88280c9b98" name="Changes" comment="Added popups to tasktimer and scheduler">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Calendar.py" beforeDir="false" afterPath="$PROJECT_DIR$/Calendar.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dashboard.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Scheduler.py" beforeDir="false" afterPath="$PROJECT_DIR$/Scheduler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TaskTimer.py" beforeDir="false" afterPath="$PROJECT_DIR$/TaskTimer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -188,7 +189,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740451995921</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Added popups to tasktimer and scheduler">
+      <option name="closed" value="true" />
+      <created>1740454282576</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1740454282576</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -212,7 +221,8 @@
     <MESSAGE value="meme button shows but no popups" />
     <MESSAGE value="done completely fixed" />
     <MESSAGE value="added more memes" />
-    <option name="LAST_COMMIT_MESSAGE" value="added more memes" />
+    <MESSAGE value="Added popups to tasktimer and scheduler" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added popups to tasktimer and scheduler" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/StreeFreeSE$main.coverage" NAME="main Coverage Results" MODIFIED="1740436408594" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
