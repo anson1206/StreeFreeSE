@@ -5,11 +5,7 @@ import Dashboard as DB
 import ToDoList as TDL
 import Calendar
 import Database as Data
-"""
-main.py
-This file is the main fie of the app. 
-The user is directed to this file when they run the app.
-"""
+
 
 
 user_id = st.session_state.get("user_id")
